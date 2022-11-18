@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "qa-python-day-19-mobile"
+version = "0.1.0"
+description = ""
+authors = ["snezhanata <111530556+snezhanata@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "qa_python_day_19_mobile"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+selene = {version = "^2.0.0-beta.16", allow-prereleases = true}
+Appium-Python-Client = "^2.7.1"
+pytest = "^7.2.0"
+pytest-xdist = "^3.0.2"
+allure-pytest = "^2.11.0"
+requests = "^2.28.1"
+pydantic = "^1.10.2"
+python-dotenv = "^0.21.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+
+[tool.pytest.ini_options]
+addopts = "--alluredir allure-results --durations=10 -vv --clean-alluredir "
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+skip-string-normalization = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
