@@ -15,14 +15,14 @@ def driver_management():
     load_dotenv()
     USER_NAME = os.getenv('USER_NAME')
     ACCESS_KEY = os.getenv('ACCESS_KEY')
-    APPIUM_BROWSERSTACK = os.getenv('APPIUM_BROWSERSTACK')
+    PLATFORM_NAME = os.getenv('PLATFORM_NAME')
     options = UiAutomator2Options()
 
     options.load_capabilities({
         "app": "bs://c700ce60cf13ae8ed97705a55b8e022f13c5827c",
         "deviceName": "Google Pixel 3",
         "platformVersion": "9.0",
-        "platformName": "android",
+        "platformName": f"{PLATFORM_NAME}",
         "project": "Python project",
         "build": "wikipedia-build-qa_guru",
         'bstack:options': {
@@ -42,5 +42,9 @@ def driver_management():
     attachments.add_video(browser)
     browser.quit()
 
+
+@pytest.fixture(scope='session', autouse=True)
+def patch_selene():
+    import wikipedia.extension.selene.patch_selector  # noqa
 
 
