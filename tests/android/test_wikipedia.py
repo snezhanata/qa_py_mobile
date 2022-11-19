@@ -3,7 +3,7 @@ from selene.support.shared import browser
 from allure import step
 
 
-def test_search_on_wikipedia():
+def test_search():
     with step('Verify content "BrowserStack" found'):
         browser.element('Search Wikipedia').click()
         browser.element('#search_src_text').type('BrowserStack')
