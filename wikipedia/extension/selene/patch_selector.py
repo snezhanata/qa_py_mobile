@@ -3,7 +3,6 @@ from typing import Union, Tuple
 from appium.webdriver.common.appiumby import AppiumBy
 from selene import Browser
 from selene.core.entity import Element, Collection
-from selenium.webdriver.common.by import By
 import re
 
 from wikipedia.extension.python import monkey
@@ -18,7 +17,6 @@ def are_words_with_dashes_underscores_or_numbers_separated_by_space(selector):
 
 
 def _by(selector: str | Tuple[str, str]):
-    # --- Handle raw locators in tuples ---
     if isinstance(selector, tuple):
         return selector
 
@@ -27,12 +25,6 @@ def _by(selector: str | Tuple[str, str]):
     ):
         appName = 'org.wikipedia.alpha'
         return AppiumBy.ID, f'{appName}:id/{selector[1:]}' if appName else selector[1:]
-
-    if selector.startswith('«') and selector.endswith('»'):
-        return (
-            AppiumBy.ANDROID_UIAUTOMATOR,
-            f'new UiSelector().text("{selector[1:-1]}")',
-        )
 
     if are_words_with_dashes_underscores_or_numbers_separated_by_space(selector):
         return AppiumBy.ACCESSIBILITY_ID, selector
@@ -57,16 +49,3 @@ def all(self, selector: Union[str, tuple]) -> Collection:
 
 
 original_element_element = Element.element
-
-
-@monkey.patch_method_in(Element)
-def element(self, selector: Union[str, tuple]) -> Element:
-    return original_element_element(self, _by(selector))
-
-
-original_element_all = Element.all
-
-
-@monkey.patch_method_in(Element)
-def all(self, selector: Union[str, tuple]) -> Collection:
-    return original_element_all(self, _by(selector))
