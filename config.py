@@ -83,3 +83,4 @@ class Settings(pydantic.BaseSettings):
 
 
 settings = Settings.in_context()
+print(settings)

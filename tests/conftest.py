@@ -11,15 +11,12 @@ import config
 from wikipedia import utils
 
 
-@pytest.fixture(scope='session', autouse=True)
-def patch_selene():
-    import wikipedia.utils.selene.patch_selector  # noqa
-
-
 @pytest.fixture(scope='function', autouse=True)
 def driver_management(request):
     browser.config.timeout = config.settings.timeout
-    browser.config._wait_decorator = support._logging.wait_with(context=allure_commons._allure.StepContext)
+    browser.config._wait_decorator = support._logging.wait_with(
+        context=allure_commons._allure.StepContext
+    )
 
     with allure.step('set up app session'):
         browser.config.driver = webdriver.Remote(
@@ -54,5 +51,10 @@ def pytest_runtest_makereport(item: Item, call: CallInfo):  # noqa
     # set a report attribute for each phase of a call, which can
     # be "setup", "call", "teardown"
     setattr(item, 'result_of_' + result_of_.when, result_of_)
+
+
+@pytest.fixture(scope='session', autouse=True)
+def patch_selene():
+    import wikipedia.utils.selene.patch_selector  # noqa
 
 
