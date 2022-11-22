@@ -32,7 +32,7 @@ def _by(selector: str | Tuple[str, str]):
     raise Exception(f'Unsupported selector: {selector}')
 
 
-original_browser_element = Browser.element # сохраняем старую версию элемента
+original_browser_element = Browser.element  # сохраняем старую версию элемента
 
 
 @monkey.patch_method_in(Browser)

@@ -8,7 +8,7 @@ EnvContext = Literal['browserstack', 'local']
 
 
 class Settings(pydantic.BaseSettings):
-    context: EnvContext = 'browserstack'
+    context: EnvContext = 'local'
 
     # --- Appium Capabilities ---
     platformName: str = None
