@@ -8,8 +8,8 @@ from wikipedia.model import app
 
 
 def test_search():
-    app.given_opened()
     with step('Verify content "BrowserStack" found'):
+        app.given_opened()
         browser.element('Search Wikipedia').click()
         browser.element('#search_src_text').type('BrowserStack')
         browser.all('#page_list_item_title').should(have.size_greater_than(0))
