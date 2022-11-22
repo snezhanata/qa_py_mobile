@@ -4,7 +4,7 @@ from typing import Literal, Optional
 
 from wikipedia import utils
 
-EnvContext = Literal['browserstack', 'emulator', 'real']
+EnvContext = Literal['browserstack', 'local']
 
 
 class Settings(pydantic.BaseSettings):

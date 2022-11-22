@@ -1,47 +1,56 @@
-import os
 import allure
+import allure_commons
 import pytest
-from appium.options.android import UiAutomator2Options
-from dotenv import load_dotenv
+from _pytest.nodes import Item
+from _pytest.runner import CallInfo
 from appium import webdriver
+from selene import support
 from selene.support.shared import browser
 
-from wikipedia.utils import attachments
+import config
+from wikipedia import utils
 
 
-load_dotenv()
-USER_NAME = os.getenv('USER_NAME')
-ACCESS_KEY = os.getenv('ACCESS_KEY')
-PLATFORM_NAME = os.getenv('PLATFORM_NAME')
-options = UiAutomator2Options()
-
-
-@pytest.fixture(scope='session', autouse=True)
-def driver_management():
-
-    options.load_capabilities({
-        "app": "bs://c700ce60cf13ae8ed97705a55b8e022f13c5827c",
-        "deviceName": "Google Pixel 3",
-        "platformVersion": "9.0",
-        "platformName": f"{PLATFORM_NAME}",
-        "project": "Python project",
-        "build": "wikipedia-build-qa_guru",
-        'bstack:options': {
-            "projectName": "Wikipedia project",
-            "buildName": "wikipedia-build-01",
-            "sessionName": "BStack first_test",
-            "userName": f"{USER_NAME}",
-            "accessKey": f"{ACCESS_KEY}",
-        }
-    })
-    browser.config.driver = webdriver.Remote(
-        command_executor="http://hub.browserstack.com/wd/hub",
-        options=options,
+@pytest.fixture(scope='function', autouse=True)
+def driver_management(request):
+    browser.config.timeout = config.settings.timeout
+    browser.config._wait_decorator = support._logging.wait_with(
+        context=allure_commons._allure.StepContext
     )
-    browser.config.timeout = 6
-    yield driver_management
-    attachments.add_video(browser)
-    allure.step('Close app session')(browser.quit)()  # завернем в аллюр степ
+
+    with allure.step('set up app session'):
+        browser.config.driver = webdriver.Remote(
+            config.settings.remote_url, options=config.settings.driver_options
+        )
+
+    yield
+
+    # given we want to save disk space
+    # then we store screenshots and xml dumps only for failed tests
+    if config.settings.run_on_browserstack and request.node.result_of_call.failed:
+        '''
+        request.node is an "item" because we use the default "function" scope
+        '''
+        utils.allure.attachment.screenshot(name='Last screenshot')
+        utils.allure.attachment.screen_xml_dump()
+
+    session_id = browser.driver.session_id
+
+    allure.step('close app session')(browser.quit)()
+
+    if config.settings.run_on_browserstack:
+        utils.allure.attachment.video_from_browserstack(session_id)
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item: Item, call: CallInfo):  # noqa
+    # execute all other hooks to obtain the report object
+    outcome = yield
+    result_of_ = outcome.get_result()
+
+    # set a report attribute for each phase of a call, which can
+    # be "setup", "call", "teardown"
+    setattr(item, 'result_of_' + result_of_.when, result_of_)
 
 
 @pytest.fixture(scope='session', autouse=True)
