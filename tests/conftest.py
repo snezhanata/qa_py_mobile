@@ -1,15 +1,13 @@
 import os
-
 import allure
 import pytest
 from appium.options.android import UiAutomator2Options
 from dotenv import load_dotenv
 from appium import webdriver
-
 from selene.support.shared import browser
-# from selenium.webdriver.chrome.options import Options
 
-from wikipedia.util import attachments
+from wikipedia.utils import attachments
+
 
 load_dotenv()
 USER_NAME = os.getenv('USER_NAME')
@@ -40,16 +38,14 @@ def driver_management():
         command_executor="http://hub.browserstack.com/wd/hub",
         options=options,
     )
-    browser.config.timeout = 2
+    browser.config.timeout = 6
     yield driver_management
+    attachments.add_video(browser)
     allure.step('Close app session')(browser.quit)()  # завернем в аллюр степ
-    # attachments.add_video(browser)
-    browser.quit()
-
 
 
 @pytest.fixture(scope='session', autouse=True)
 def patch_selene():
-    import wikipedia.extension.selene.patch_selector  # noqa
+    import wikipedia.utils.selene.patch_selector  # noqa
 
 
