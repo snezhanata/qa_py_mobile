@@ -1,22 +1,23 @@
 import os
+import allure
 import pytest
 from appium.options.android import UiAutomator2Options
 from dotenv import load_dotenv
 from appium import webdriver
-
 from selene.support.shared import browser
-from selenium.webdriver.chrome.options import Options
 
-from wikipedia.util import attachments
+from wikipedia.utils import attachments
+
+
+load_dotenv()
+USER_NAME = os.getenv('USER_NAME')
+ACCESS_KEY = os.getenv('ACCESS_KEY')
+PLATFORM_NAME = os.getenv('PLATFORM_NAME')
+options = UiAutomator2Options()
 
 
 @pytest.fixture(scope='session', autouse=True)
 def driver_management():
-    load_dotenv()
-    USER_NAME = os.getenv('USER_NAME')
-    ACCESS_KEY = os.getenv('ACCESS_KEY')
-    PLATFORM_NAME = os.getenv('PLATFORM_NAME')
-    options = UiAutomator2Options()
 
     options.load_capabilities({
         "app": "bs://c700ce60cf13ae8ed97705a55b8e022f13c5827c",
@@ -37,14 +38,14 @@ def driver_management():
         command_executor="http://hub.browserstack.com/wd/hub",
         options=options,
     )
-    browser.config.timeout = 4
+    browser.config.timeout = 6
     yield driver_management
     attachments.add_video(browser)
-    browser.quit()
+    allure.step('Close app session')(browser.quit)()  # завернем в аллюр степ
 
 
 @pytest.fixture(scope='session', autouse=True)
 def patch_selene():
-    import wikipedia.extension.selene.patch_selector  # noqa
+    import wikipedia.utils.selene.patch_selector  # noqa
 
 
