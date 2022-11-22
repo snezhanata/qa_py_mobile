@@ -1,5 +1,8 @@
 import allure
+# import requests
 from allure_commons.types import AttachmentType
+
+# from tests.conftest import USER_NAME, ACCESS_KEY
 
 
 def add_video(browser):
@@ -18,3 +21,22 @@ def add_video(browser):
         attachment_type=AttachmentType.HTML,
         extension='.html',
     )
+
+
+# def video_from_browserstack(session_id, *, name='video recording'):
+#     video_url = video_url(session_id=session_id)
+#
+#     allure.attach(
+#         '<html><body>'
+#         '<video width="100%" height="100%" controls autoplay>'
+#         f'<source src="{video_url}" type="video/mp4">'
+#         '</video>'
+#         '</body></html>',
+#         name=name,
+#         attachment_type=allure.attachment_type.HTML,
+#     )
+#
+# def video_url(*, session_id):
+#     session_details = requests.get(f'https://api.browserstack.com/app-automate/session/{session_id}.json',
+#                                    auth=(USER_NAME, ACCESS_KEY),).json()
+#     return session_details['automation_session']['video_url']
