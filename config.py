@@ -4,11 +4,11 @@ from typing import Literal, Optional
 
 from wikipedia import utils
 
-EnvContext = Literal['browserstack', 'emulator', 'real']
+EnvContext = Literal['browserstack', 'local']
 
 
 class Settings(pydantic.BaseSettings):
-    context: EnvContext = 'browserstack'
+    context: EnvContext = 'local'
 
     # --- Appium Capabilities ---
     platformName: str = None
@@ -83,3 +83,4 @@ class Settings(pydantic.BaseSettings):
 
 
 settings = Settings.in_context()
+print(settings)
